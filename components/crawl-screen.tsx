@@ -69,7 +69,7 @@ export default function CrawlScreen({ onStateChange, playUISound }: CrawlScreenP
                 onMouseEnter={playUISound}
                 className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-4 text-xl font-bold rounded-lg shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
               >
-                🟪 Begin Mission 1: Arrival
+                🟪 Begin Mission 1: The Recruit
               </Button>
             </div>
           )}

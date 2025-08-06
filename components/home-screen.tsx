@@ -1,8 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
 import { ChevronRight } from 'lucide-react'
+import { Button } from "@/components/ui/button"
 import type { GameState } from "@/app/page"
 
 interface HomeScreenProps {
@@ -11,13 +10,6 @@ interface HomeScreenProps {
 }
 
 export default function HomeScreen({ onStateChange, playUISound }: HomeScreenProps) {
-  const [titleAnimation, setTitleAnimation] = useState("")
-
-  useEffect(() => {
-    // Animate title on load
-    setTimeout(() => setTitleAnimation("animate-pulse"), 500)
-  }, [])
-
   const startCrawl = () => {
     playUISound()
     onStateChange("crawl")
@@ -51,7 +43,7 @@ export default function HomeScreen({ onStateChange, playUISound }: HomeScreenPro
       <div className="relative z-20 min-h-screen flex flex-col items-center justify-center p-8">
         <div className="text-center space-y-8 max-w-2xl">
           {/* Title */}
-          <div className={`space-y-4 ${titleAnimation}`}>
+          <div className="space-y-4 animate-pulse">
             <h1 className="text-6xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 tracking-wider">
               SeyGe Reflex
             </h1>

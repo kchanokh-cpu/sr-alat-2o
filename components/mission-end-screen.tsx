@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import type { GameState, GameStats } from "@/app/page"
@@ -12,123 +13,114 @@ interface MissionEndScreenProps {
 }
 
 export default function MissionEndScreen({ onStateChange, playUISound, gameStats, resetGame }: MissionEndScreenProps) {
-  const getMissionDuration = () => {
-    if (gameStats.missionStartTime && gameStats.missionEndTime) {
-      const duration = gameStats.missionEndTime - gameStats.missionStartTime
-      const minutes = Math.floor(duration / 60000)
-      const seconds = Math.floor((duration % 60000) / 1000)
-      return `${minutes}:${seconds.toString().padStart(2, '0')}`
+  const missionEndRef = useRef<HTMLAudioElement>(null)
+
+  useEffect(() => {
+    // Play mission end audio
+    if (missionEndRef.current) {
+      missionEndRef.current.play().catch(console.error)
     }
-    return "N/A"
+  }, [])
+
+  const getMissionTime = () => {
+    if (gameStats.missionStartTime && gameStats.missionEndTime) {
+      const seconds = Math.floor((gameStats.missionEndTime - gameStats.missionStartTime) / 1000)
+      const minutes = Math.floor(seconds / 60)
+      const remainingSeconds = seconds % 60
+      return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+    }
+    return "0:00"
   }
 
-  const getPerformanceRating = () => {
-    const retries = gameStats.totalRetries
-    if (retries === 0) return { rating: "EXCELLENT", color: "text-green-400", emoji: "🏆" }
-    if (retries <= 2) return { rating: "GOOD", color: "text-blue-400", emoji: "👍" }
-    if (retries <= 5) return { rating: "FAIR", color: "text-yellow-400", emoji: "⚠️" }
-    return { rating: "NEEDS IMPROVEMENT", color: "text-red-400", emoji: "📚" }
+  const getMemoryRetrievalSpeed = () => {
+    if (gameStats.totalRetries <= 1) return "High"
+    if (gameStats.totalRetries <= 3) return "Medium"
+    return "Low"
   }
 
-  const performance = getPerformanceRating()
+  const getRecommendedReplays = () => {
+    const mrs = getMemoryRetrievalSpeed()
+    if (mrs === "High") return 1
+    if (mrs === "Medium") return 2
+    return 3
+  }
 
-  const playAgain = () => {
+  const restartMission = () => {
+    playUISound()
+    resetGame()
+    onStateChange("game")
+  }
+
+  const returnToTitle = () => {
     playUISound()
     resetGame()
     onStateChange("title")
   }
 
-  const quitGame = () => {
-    playUISound()
-    window.close()
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
+      {/* Mission End Audio */}
+      <audio ref={missionEndRef} preload="auto">
+        <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Lenoir%20Mission%201%20End-lE3sVqPFmLzECKR3EfWu083TwEXzvP.mp3" type="audio/mpeg" />
+      </audio>
+
       <Card className="max-w-2xl w-full p-8 text-center bg-slate-800 border-green-500 border-2">
-        <div className="space-y-6">
-          {/* Mission Complete Header */}
-          <div>
-            <div className="text-6xl mb-4">🎯</div>
-            <h1 className="text-3xl font-bold text-green-400 mb-2">Mission Complete</h1>
-            <p className="text-slate-300 text-lg">En route to UG Campus…</p>
+        <div className="text-6xl mb-4">🎯</div>
+        <h1 className="text-3xl font-bold text-green-400 mb-6">Mission Accomplished</h1>
+
+        {/* Mission Stats */}
+        <div className="grid grid-cols-2 gap-6 mb-8">
+          <div className="bg-slate-700 p-4 rounded-lg">
+            <div className="text-2xl font-bold text-blue-400">{getMissionTime()}</div>
+            <div className="text-sm text-slate-400">Mission Time</div>
           </div>
-
-          {/* Mission Stats */}
-          <div className="bg-slate-900/50 rounded-lg p-6 space-y-4">
-            <h2 className="text-xl font-semibold text-white mb-4">Mission Statistics</h2>
-            
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="bg-slate-800/50 p-3 rounded">
-                <div className="text-slate-400">Duration</div>
-                <div className="text-white font-mono text-lg">{getMissionDuration()}</div>
-              </div>
-              
-              <div className="bg-slate-800/50 p-3 rounded">
-                <div className="text-slate-400">Retries</div>
-                <div className="text-white font-mono text-lg">{gameStats.totalRetries}</div>
-              </div>
-              
-              <div className="bg-slate-800/50 p-3 rounded">
-                <div className="text-slate-400">Phrases Completed</div>
-                <div className="text-white font-mono text-lg">{gameStats.completedPhrases.length}</div>
-              </div>
-              
-              <div className="bg-slate-800/50 p-3 rounded">
-                <div className="text-slate-400">Performance</div>
-                <div className={`font-bold text-lg ${performance.color}`}>
-                  {performance.emoji} {performance.rating}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Completed Phrases */}
-          {gameStats.completedPhrases.length > 0 && (
-            <div className="bg-slate-900/50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-white mb-3">Phrases Mastered</h3>
-              <div className="space-y-2 text-left">
-                {gameStats.completedPhrases.map((phrase, index) => (
-                  <div key={index} className="bg-slate-800/50 p-2 rounded text-green-300 text-sm">
-                    "{phrase}"
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Mission Status */}
-          <div className="text-sm text-slate-400 space-y-1">
-            <div>Mission Status: <span className="text-green-400 font-semibold">SUCCESS</span></div>
-            <div>Agent Status: <span className="text-blue-400 font-semibold">COVER INTACT</span></div>
-            <div>Next Objective: <span className="text-yellow-400 font-semibold">CAMPUS INFILTRATION</span></div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button
-              onClick={playAgain}
-              onMouseEnter={playUISound}
-              className="bg-green-600 hover:bg-green-500 text-white px-8 py-3 text-lg font-semibold"
-            >
-              🔄 Play Again
-            </Button>
-
-            <Button
-              onClick={quitGame}
-              onMouseEnter={playUISound}
-              variant="outline"
-              className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white px-8 py-3 text-lg font-semibold"
-            >
-              🚪 Exit
-            </Button>
-          </div>
-
-          {/* Footer */}
-          <div className="text-xs text-slate-500 pt-4 border-t border-slate-700">
-            SeyGe Reflex™ Training Simulation • SRLUF Internal Use Only
+          <div className="bg-slate-700 p-4 rounded-lg">
+            <div className="text-2xl font-bold text-yellow-400">{getMemoryRetrievalSpeed()}</div>
+            <div className="text-sm text-slate-400">Memory Retrieval Speed</div>
           </div>
         </div>
+
+        {/* Completed Phrases */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-green-300 mb-4">Phrases Mastered:</h3>
+          <div className="space-y-2">
+            {gameStats.completedPhrases.map((phrase, index) => (
+              <div key={index} className="bg-slate-700 p-2 rounded text-sm text-slate-300">
+                "{phrase}"
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recommendations */}
+        <div className="mb-8 p-4 bg-blue-900/20 border border-blue-400 rounded-lg">
+          <h3 className="text-lg font-semibold text-blue-300 mb-2">Training Recommendation:</h3>
+          <p className="text-slate-300">
+            Replay this scenario {getRecommendedReplays()} more time{getRecommendedReplays() > 1 ? "s" : ""} to
+            achieve optimal memory consolidation.
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button
+            onClick={restartMission}
+            onMouseEnter={playUISound}
+            className="bg-green-600 hover:bg-green-700 px-6 py-3"
+          >
+            🔄 Replay Mission
+          </Button>
+          <Button
+            onClick={returnToTitle}
+            onMouseEnter={playUISound}
+            variant="outline"
+            className="border-slate-600 hover:bg-slate-700 px-6 py-3 bg-transparent"
+          >
+            🏠 Return to Title
+          </Button>
+        </div>
+
+        <div className="text-sm text-slate-400 mt-6">Next Mission: Campus Infiltration - Coming Soon</div>
       </Card>
     </div>
   )

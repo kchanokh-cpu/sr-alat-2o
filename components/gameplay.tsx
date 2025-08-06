@@ -20,17 +20,17 @@ const pronunciationGuides = {
   "Excusez-moi, je cherche la sortie.": {
     phonetic: "eks-kü-ZAY mwah, zhuh SHERSH lah sor-TEE",
     translation: "Excuse me, I'm looking for the exit.",
-    audioFile: "/audio/pronunciation/excusez-moi-sortie.mp3",
+    audioFile: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/excusez-moi-sortie-cTZaSqOKYwyDNpBBd2C0LeKKXrUcde.mp3",
   },
   "Est-ce que vous allez aussi à UG Legon ?": {
     phonetic: "es-kuh voo zah-LAY oh-SEE ah ü-zhay luh-GOHN",
     translation: "Are you also going to UG Legon?",
-    audioFile: "/audio/pronunciation/ug-legon-question.mp3",
+    audioFile: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ug-legon-question-4JRS06c54g5DQUPmNtotwwyEOk9G9M.mp3",
   },
   "Merci beaucoup, c'est ma première fois au Ghana.": {
     phonetic: "mer-SEE boh-KOO, say mah pruh-mee-YAIR fwah oh gah-NAH",
     translation: "Thank you very much, it's my first time in Ghana.",
-    audioFile: "/audio/pronunciation/merci-premiere-fois.mp3",
+    audioFile: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/merci-premiere-fois-hgNGhj9j0vWnY1jayI1QN4utjBKIPV.mp3",
   },
 }
 

@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Button } from "@/components/ui/button"
 import { ChevronRight } from 'lucide-react'
+import { Button } from "@/components/ui/button"
 import type { GameState } from "@/app/page"
 import { crawlText } from "@/app/page"
 
@@ -16,7 +16,6 @@ export default function CrawlScreen({ onStateChange, playUISound }: CrawlScreenP
   const crawlTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
-    // Start the crawl animation
     crawlTimerRef.current = setInterval(() => {
       setCrawlIndex((prev) => {
         if (prev >= crawlText.length - 1) {
@@ -34,8 +33,8 @@ export default function CrawlScreen({ onStateChange, playUISound }: CrawlScreenP
 
   const startGame = () => {
     playUISound()
-    onStateChange("game")
     if (crawlTimerRef.current) clearInterval(crawlTimerRef.current)
+    onStateChange("game")
   }
 
   return (

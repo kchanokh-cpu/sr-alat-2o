@@ -1,7 +1,8 @@
 "use client"
 
-import { ChevronRight } from 'lucide-react'
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import type { GameState } from "@/app/page"
 
 interface HomeScreenProps {
@@ -10,73 +11,75 @@ interface HomeScreenProps {
 }
 
 export default function HomeScreen({ onStateChange, playUISound }: HomeScreenProps) {
-  const startCrawl = () => {
+  const [logoVisible, setLogoVisible] = useState(false)
+
+  useEffect(() => {
+    // Animate logo entrance
+    setTimeout(() => setLogoVisible(true), 500)
+  }, [])
+
+  const startGame = () => {
     playUISound()
     onStateChange("crawl")
   }
 
-  const quitGame = () => {
+  const exitGame = () => {
     playUISound()
     window.close()
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-      {/* SRLUF Emblem Watermark */}
-      <div className="absolute top-4 left-4 opacity-20 z-10">
-        <img src="/srluf-emblem.png" alt="SRLUF" className="w-16 h-16" />
-      </div>
-
-      {/* Version Info */}
-      <div className="absolute bottom-4 right-4 text-slate-500 text-xs font-mono">
-        Ver. 0.1 | Internal Testing | Codename: Reflex Fire
-      </div>
-
-      {/* Airport Background with Motion */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
-        <div className="absolute top-1/4 right-1/3 w-2 h-2 bg-red-500 rounded-full animate-pulse opacity-60" />
-        <div className="absolute top-1/3 left-1/4 w-1 h-1 bg-blue-400 rounded-full animate-pulse opacity-40" />
-        <div className="absolute bottom-1/3 right-1/4 w-1 h-1 bg-green-400 rounded-full animate-pulse opacity-50" />
-      </div>
-
-      {/* Main Content */}
-      <div className="relative z-20 min-h-screen flex flex-col items-center justify-center p-8">
-        <div className="text-center space-y-8 max-w-2xl">
-          {/* Title */}
-          <div className="space-y-4 animate-pulse">
-            <h1 className="text-6xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 tracking-wider">
-              SeyGe Reflex
-            </h1>
-            <p className="text-xl md:text-2xl text-slate-300 font-light tracking-wide">
-              Another Life, Another Tongue™
-            </p>
-            <p className="text-sm md:text-base text-slate-400 italic">Undercover. Uncovered. Unfiltered.</p>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12">
-            <Button
-              onClick={startCrawl}
-              onMouseEnter={playUISound}
-              className="bg-green-600 hover:bg-green-500 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-green-500/25 transition-all duration-300 group"
-            >
-              <span className="mr-2">🟢</span>
-              Begin
-              <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-
-            <Button
-              onClick={quitGame}
-              onMouseEnter={playUISound}
-              variant="outline"
-              className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-300 bg-transparent"
-            >
-              <span className="mr-2">🔴</span>
-              Abort Operation
-            </Button>
-          </div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      <Card className="max-w-2xl w-full p-8 text-center bg-slate-800/90 border-slate-600">
+        {/* Logo and Title */}
+        <div className={`transition-all duration-1000 ${logoVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <img
+            src="/srluf-emblem.png"
+            alt="SRLUF Emblem"
+            className="w-24 h-24 mx-auto mb-6"
+          />
+          
+          <h1 className="text-4xl font-bold text-green-400 mb-2">SeyGe Reflex</h1>
+          <p className="text-xl text-slate-300 mb-2">Another Life, Another Tongue™</p>
+          <p className="text-sm text-slate-400 mb-8">Service de Renseignement Linguistique de l'Union Francophone</p>
         </div>
-      </div>
+
+        {/* Mission Brief */}
+        <div className="bg-slate-900/50 p-6 rounded-lg mb-8">
+          <h2 className="text-lg font-semibold text-blue-400 mb-3">Mission Brief</h2>
+          <p className="text-slate-300 text-sm leading-relaxed">
+            Agent Touré, you are about to begin your first deep-cover assignment. 
+            Your mission: infiltrate the University of Ghana, Legon, posing as a language exchange student. 
+            Your handler, Commandant Lenoir, will guide you through critical interactions. 
+            Remember: every word matters. Every hesitation could blow your cover.
+          </p>
+        </div>
+
+        {/* Menu Options */}
+        <div className="space-y-4">
+          <Button
+            onClick={startGame}
+            onMouseEnter={playUISound}
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-4 text-lg font-semibold"
+          >
+            🎯 Begin Mission
+          </Button>
+
+          <Button
+            onClick={exitGame}
+            onMouseEnter={playUISound}
+            variant="outline"
+            className="w-full border-red-500 text-red-400 hover:bg-red-500 hover:text-white py-4 text-lg font-semibold"
+          >
+            🚪 Exit
+          </Button>
+        </div>
+
+        {/* Footer */}
+        <div className="text-xs text-slate-500 mt-8 pt-4 border-t border-slate-700">
+          SRLUF Training Simulation • Classified • For Internal Use Only
+        </div>
+      </Card>
     </div>
   )
 }

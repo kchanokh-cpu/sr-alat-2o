@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { ChevronRight } from 'lucide-react'
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import type { GameState } from "@/app/page"
 import { crawlText } from "@/app/page"
@@ -12,67 +11,96 @@ interface CrawlScreenProps {
 }
 
 export default function CrawlScreen({ onStateChange, playUISound }: CrawlScreenProps) {
-  const [crawlIndex, setCrawlIndex] = useState(0)
-  const crawlTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const [currentLineIndex, setCurrentLineIndex] = useState(0)
+  const [displayedText, setDisplayedText] = useState<string[]>([])
+  const [showSkipButton, setShowSkipButton] = useState(false)
 
   useEffect(() => {
-    crawlTimerRef.current = setInterval(() => {
-      setCrawlIndex((prev) => {
-        if (prev >= crawlText.length - 1) {
-          if (crawlTimerRef.current) clearInterval(crawlTimerRef.current)
-          return prev
-        }
-        return prev + 1
-      })
+    setShowSkipButton(true)
+
+    const interval = setInterval(() => {
+      if (currentLineIndex < crawlText.length) {
+        setDisplayedText(prev => [...prev, crawlText[currentLineIndex]])
+        setCurrentLineIndex(prev => prev + 1)
+      } else {
+        clearInterval(interval)
+        setTimeout(() => {
+          onStateChange("game")
+        }, 2000)
+      }
     }, 800)
 
-    return () => {
-      if (crawlTimerRef.current) clearInterval(crawlTimerRef.current)
-    }
-  }, [])
+    return () => clearInterval(interval)
+  }, [currentLineIndex, onStateChange])
 
-  const startGame = () => {
+  const skipCrawl = () => {
     playUISound()
-    if (crawlTimerRef.current) clearInterval(crawlTimerRef.current)
     onStateChange("game")
   }
 
   return (
-    <div className="min-h-screen bg-black text-green-400 font-mono relative overflow-hidden">
-      {/* Skip Button */}
-      <Button
-        onClick={startGame}
-        onMouseEnter={playUISound}
-        className="absolute top-4 right-4 z-50 bg-slate-800 hover:bg-slate-700 text-green-400 border border-green-400"
-      >
-        Skip <ChevronRight className="ml-1 w-4 h-4" />
-      </Button>
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 relative overflow-hidden">
+      {/* Stars background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-900 to-black">
+        {[...Array(50)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+            }}
+          />
+        ))}
+      </div>
 
-      {/* Crawl Text */}
-      <div className="min-h-screen flex items-center justify-center p-8">
-        <div className="max-w-3xl text-center space-y-6">
-          {crawlText.slice(0, crawlIndex + 1).map((line, index) => (
+      {/* Skip button */}
+      {showSkipButton && (
+        <Button
+          onClick={skipCrawl}
+          onMouseEnter={playUISound}
+          className="absolute top-4 right-4 z-10 bg-slate-800/80 hover:bg-slate-700 text-white"
+        >
+          Skip Intro
+        </Button>
+      )}
+
+      {/* Crawling text */}
+      <div className="relative z-10 max-w-4xl w-full text-center">
+        <div className="space-y-4">
+          {displayedText.map((line, index) => (
             <div
               key={index}
-              className={`text-lg md:text-xl leading-relaxed transition-opacity duration-1000 ${
-                index === crawlIndex ? "opacity-100 animate-pulse" : "opacity-80"
-              }`}
+              className={`transition-all duration-1000 ${
+                line.startsWith("🌍") || line.startsWith("📡") || line.startsWith("🧠")
+                  ? "text-yellow-400 text-xl font-bold"
+                  : line === ""
+                    ? "h-4"
+                    : line.includes("SeyGe Reflex")
+                      ? "text-green-400 text-3xl font-bold"
+                      : line.includes("SRLUF")
+                        ? "text-blue-400 text-lg font-semibold"
+                        : "text-slate-300 text-lg"
+              } ${index === displayedText.length - 1 ? "animate-fade-in" : ""}`}
             >
               {line}
             </div>
           ))}
+        </div>
+      </div>
 
-          {crawlIndex >= crawlText.length - 1 && (
-            <div className="mt-12 animate-pulse">
-              <Button
-                onClick={startGame}
-                onMouseEnter={playUISound}
-                className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-4 text-xl font-bold rounded-lg shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
-              >
-                🟪 Begin Mission 1: The Recruit
-              </Button>
-            </div>
-          )}
+      {/* Progress indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="flex space-x-2">
+          {crawlText.map((_, index) => (
+            <div
+              key={index}
+              className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                index < currentLineIndex ? "bg-green-400" : "bg-slate-600"
+              }`}
+            />
+          ))}
         </div>
       </div>
     </div>

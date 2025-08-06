@@ -176,9 +176,11 @@ export default function Gameplay({ onStateChange, playUISound, gameStats, setGam
       timerRef.current = setInterval(() => {
         setRecordingTimer((prev) => {
           if (prev <= 1) {
-            stopRecording()
-            // Trigger faux pas instead of auto-completing
-            triggerFauxPas()
+            // Use setTimeout to avoid setState during render
+            setTimeout(() => {
+              stopRecording()
+              triggerFauxPas()
+            }, 0)
             return 0
           }
           return prev - 1
@@ -215,10 +217,11 @@ export default function Gameplay({ onStateChange, playUISound, gameStats, setGam
     const currentDialogue = dialogueSteps[currentStep]
     if (currentDialogue.speaker === "user" && currentDialogue.fallbackText) {
       // Update retry count
-      setGameStats({
+      const newStats = {
         ...gameStats,
         totalRetries: gameStats.totalRetries + 1
-      })
+      }
+      setGameStats(newStats)
       
       // Go to faux pas screen
       onStateChange("faux-pas", { fauxPasStep: currentStep })
@@ -235,10 +238,11 @@ export default function Gameplay({ onStateChange, playUISound, gameStats, setGam
     const currentDialogue = dialogueSteps[currentStep]
     if (currentDialogue.userPrompt) {
       // Add completed phrase to stats
-      setGameStats({
+      const newStats = {
         ...gameStats,
         completedPhrases: [...gameStats.completedPhrases, currentDialogue.userPrompt]
-      })
+      }
+      setGameStats(newStats)
     }
 
     // Auto-advance to next step and play audio automatically

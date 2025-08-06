@@ -58,23 +58,29 @@ export default function MissionEndScreen({ onStateChange, playUISound, gameStats
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-4">
+    <div 
+      className="min-h-screen bg-cover bg-center relative flex items-center justify-center p-4"
+      style={{ backgroundImage: "url('/backgrounds/legon-campus-satellite.jpg')" }}
+    >
+      {/* Background overlay */}
+      <div className="absolute inset-0 bg-black/60" />
+
       {/* Mission End Audio */}
       <audio ref={missionEndRef} preload="auto">
         <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Lenoir%20Mission%201%20End-lE3sVqPFmLzECKR3EfWu083TwEXzvP.mp3" type="audio/mpeg" />
       </audio>
 
-      <Card className="max-w-2xl w-full p-8 text-center bg-slate-800 border-green-500 border-2">
+      <Card className="max-w-2xl w-full p-8 text-center bg-slate-800/90 border-green-500 border-2 relative z-10">
         <div className="text-6xl mb-4">🎯</div>
         <h1 className="text-3xl font-bold text-green-400 mb-6">Mission Accomplished</h1>
 
         {/* Mission Stats */}
         <div className="grid grid-cols-2 gap-6 mb-8">
-          <div className="bg-slate-700 p-4 rounded-lg">
+          <div className="bg-slate-700/80 p-4 rounded-lg">
             <div className="text-2xl font-bold text-blue-400">{getMissionTime()}</div>
             <div className="text-sm text-slate-400">Mission Time</div>
           </div>
-          <div className="bg-slate-700 p-4 rounded-lg">
+          <div className="bg-slate-700/80 p-4 rounded-lg">
             <div className="text-2xl font-bold text-yellow-400">{getMemoryRetrievalSpeed()}</div>
             <div className="text-sm text-slate-400">Memory Retrieval Speed</div>
           </div>
@@ -85,7 +91,7 @@ export default function MissionEndScreen({ onStateChange, playUISound, gameStats
           <h3 className="text-lg font-semibold text-green-300 mb-4">Phrases Mastered:</h3>
           <div className="space-y-2">
             {gameStats.completedPhrases.map((phrase, index) => (
-              <div key={index} className="bg-slate-700 p-2 rounded text-sm text-slate-300">
+              <div key={index} className="bg-slate-700/80 p-2 rounded text-sm text-slate-300">
                 "{phrase}"
               </div>
             ))}
@@ -93,7 +99,7 @@ export default function MissionEndScreen({ onStateChange, playUISound, gameStats
         </div>
 
         {/* Recommendations */}
-        <div className="mb-8 p-4 bg-blue-900/20 border border-blue-400 rounded-lg">
+        <div className="mb-8 p-4 bg-blue-900/30 border border-blue-400 rounded-lg">
           <h3 className="text-lg font-semibold text-blue-300 mb-2">Training Recommendation:</h3>
           <p className="text-slate-300">
             Replay this scenario {getRecommendedReplays()} more time{getRecommendedReplays() > 1 ? "s" : ""} to

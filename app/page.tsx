@@ -85,7 +85,7 @@ export const dialogueSteps: DialogueStep[] = [
     speaker: "user",
     text: "Thank him:",
     userPrompt: "Merci beaucoup, c'est ma première fois au Ghana.",
-    fallbackText: "Pas le moment de rester muet, agent. Thank him!",
+    fallbackText: "Pas le moment de rester muet, agent. Thank Kouassi for his help! We don't want him to think that you're impolite.",
     fallbackAudio:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Lenoir%20Line%206-WMtDn6pKv5FlQ4peMTb1WJUJtxzOwO.mp3",
   },
